@@ -1,13 +1,11 @@
 class point
 {
 private:
-    /* data */
-    int pos_x, pos_y, velocity, tail;
+    int pos_x, pos_y;
 public:
-    point(int, int, int, int);
+    point(int, int);
     point(){};
     ~point();
     void setX(int);
     void setY(int);
-    void setV(int);
 };
