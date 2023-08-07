@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <cstdlib>
 #include <ctime>
+#include "point.h"
 
 #define HEIGHT 16
 #define WIDTH 16
