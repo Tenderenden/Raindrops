@@ -7,21 +7,40 @@
 
 #define HEIGHT 16
 #define WIDTH 16
+#define MAX_POINTS_NUM 16
 
-int screen_matrix[WIDTH * HEIGHT] = {0};
+int screen_buffer[WIDTH * HEIGHT] = {0};
 
-void updateMatrix(void)
+Point points[MAX_POINTS_NUM];
+void clearBuffer(void)
 {
-	for(int i = HEIGHT; i > 0; --i)
+	for(int i=0; i<WIDTH * HEIGHT; ++i)
 	{
-		for(int x=0; x<WIDTH; ++x)
+		screen_buffer[i] = 0;
+	}
+}
+
+void updateBuffer(void)
+{
+	clearBuffer();
+	for(int i=0; i< MAX_POINTS_NUM; ++i)
+	{
+		if(FALSE == points[i].alive)
 		{
-			screen_matrix[(i*16) + x] = screen_matrix[((i-1)*16) + x];
+			points[i].x = rand()%16;
+			points[i].y = 0;
+			points[i].alive = TRUE;
+			break;
 		}
 	}
-	for(int i = 0; i<WIDTH; ++i)
+	for(int i=0; i< MAX_POINTS_NUM; ++i)
 	{
-		screen_matrix[i] = 0;
+		if(TRUE == points[i].alive)
+		{
+			screen_buffer[points[i].y*16 + points[i].x] = 1;
+			points[i].y++;
+			if(points[i].y > HEIGHT) points[i].alive = FALSE;
+		}
 	}
 }
 
@@ -31,7 +50,7 @@ void drawScreen(void)
 	{
 		for(int c=0; c<WIDTH; ++c)
 		{
-			if(screen_matrix[(r * WIDTH) + c] == 1)
+			if(screen_buffer[(r * WIDTH) + c] == 1)
 			{
 				printf("O");
 			}
@@ -45,7 +64,7 @@ void zeroLine(void)
 {
 	for(int i=0; i<WIDTH; i++)
 	{
-		screen_matrix[i] = 0;
+		screen_buffer[i] = 0;
 	}
 }
 
@@ -54,9 +73,9 @@ int main()
 	srand((unsigned) time(NULL));
 	while(1)
 	{
-		updateMatrix();
-		system("cls");
-		screen_matrix[rand()%16] = 1;
+		updateBuffer();
+		system("clear");
+		// screen_buffer[rand()%16] = 1;
 		drawScreen();
 		Sleep(500);
 	}
