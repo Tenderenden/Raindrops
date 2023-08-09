@@ -4,11 +4,13 @@
 #include <cstdlib>
 #include <ctime>
 #include "point.h"
+#include <queue>
 
 #define HEIGHT 16
 #define WIDTH 16
 #define MAX_POINTS_NUM 16
 
+std::queue <int> kolejka;
 int screen_buffer[WIDTH * HEIGHT] = {0};
 
 Point points[MAX_POINTS_NUM];
@@ -22,24 +24,28 @@ void clearBuffer(void)
 
 void updateBuffer(void)
 {
+	int i=0;
 	clearBuffer();
-	for(int i=0; i< MAX_POINTS_NUM; ++i)
+	if(false == kolejka.empty())
 	{
-		if(FALSE == points[i].alive)
-		{
-			points[i].x = rand()%16;
-			points[i].y = 0;
-			points[i].alive = TRUE;
-			break;
-		}
+		i = kolejka.front();
+		kolejka.pop();
+		points[i].x = rand()%16;
+		points[i].y = 0;
+		points[i].alive = TRUE;
 	}
-	for(int i=0; i< MAX_POINTS_NUM; ++i)
+
+	for(i=0; i< MAX_POINTS_NUM; ++i)
 	{
 		if(TRUE == points[i].alive)
 		{
 			screen_buffer[points[i].y*16 + points[i].x] = 1;
 			points[i].y++;
-			if(points[i].y > HEIGHT) points[i].alive = FALSE;
+			if(points[i].y > HEIGHT)
+			{
+				points[i].alive = FALSE;
+				kolejka.push(i);
+			}
 		}
 	}
 }
@@ -52,9 +58,9 @@ void drawScreen(void)
 		{
 			if(screen_buffer[(r * WIDTH) + c] == 1)
 			{
-				printf("O");
+				printf("%c", 219);
 			}
-			else printf("_");
+			else printf("%c", 178);
 		}
 		printf("\n");
 	}
@@ -71,6 +77,7 @@ void zeroLine(void)
 int main()
 {
 	srand((unsigned) time(NULL));
+	for(auto i=0; i<WIDTH; ++i) kolejka.push(i);
 	while(1)
 	{
 		updateBuffer();
