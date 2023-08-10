@@ -9,6 +9,7 @@
 #define HEIGHT 16
 #define WIDTH 16
 #define MAX_POINTS_NUM 16
+#define TAIL_LEN 3
 
 std::queue <int> kolejka;
 int screen_buffer[WIDTH * HEIGHT] = {0};
@@ -30,7 +31,7 @@ void updateBuffer(void)
 	{
 		i = kolejka.front();
 		kolejka.pop();
-		points[i].x = rand()%16;
+		points[i].x = rand()%WIDTH;
 		points[i].y = 0;
 		points[i].alive = TRUE;
 	}
@@ -39,7 +40,14 @@ void updateBuffer(void)
 	{
 		if(TRUE == points[i].alive)
 		{
-			screen_buffer[points[i].y*16 + points[i].x] = 1;
+			screen_buffer[points[i].y*WIDTH + points[i].x] = 1;
+			for(int x=1; x<points[i].tail+1; ++x)
+			{
+				if(points[i].y-x >= 0)
+				{
+					screen_buffer[(points[i].y-x)*WIDTH + points[i].x] = 2;
+				}
+			}
 			points[i].y++;
 			if(points[i].y > HEIGHT)
 			{
@@ -56,11 +64,20 @@ void drawScreen(void)
 	{
 		for(int c=0; c<WIDTH; ++c)
 		{
-			if(screen_buffer[(r * WIDTH) + c] == 1)
+			switch (screen_buffer[(r * WIDTH) + c])
 			{
-				printf("%c", 219);
+			case 0:
+				printf("-");
+				break;
+			case 1:
+				printf("O");
+				break;
+			case 2:
+				printf("x");
+				break;
+			default:
+				break;
 			}
-			else printf("%c", 178);
 		}
 		printf("\n");
 	}
@@ -82,7 +99,6 @@ int main()
 	{
 		updateBuffer();
 		system("clear");
-		// screen_buffer[rand()%16] = 1;
 		drawScreen();
 		Sleep(500);
 	}
